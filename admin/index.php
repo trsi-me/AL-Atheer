@@ -30,6 +30,7 @@ require dirname(__DIR__) . '/includes/header.php';
 <section class="admin-panel">
     <h1 class="admin-panel__title">إدارة المسارات</h1>
     <p class="admin-panel__tools">
+        <a class="btn btn--secondary" href="bookings.php">الحجوزات</a>
         <a class="btn btn--secondary" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">عرض الموقع</a>
         <a class="btn btn--muted" href="login.php?logout=1">خروج</a>
     </p>

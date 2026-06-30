@@ -35,6 +35,28 @@ CREATE TABLE `routes` (
   UNIQUE KEY `uq_source_url` (`source_url`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS `bookings`;
+CREATE TABLE `bookings` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `booking_ref` VARCHAR(24) NOT NULL,
+  `route_id` INT UNSIGNED NOT NULL,
+  `full_name` VARCHAR(255) NOT NULL,
+  `phone` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(255) NULL,
+  `participants` INT UNSIGNED NOT NULL DEFAULT 1,
+  `unit_price` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `total_amount` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `payment_method` VARCHAR(32) NOT NULL,
+  `payment_status` ENUM('pending','paid','failed','cancelled') NOT NULL DEFAULT 'pending',
+  `notes` TEXT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `paid_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_booking_ref` (`booking_ref`),
+  KEY `idx_route_id` (`route_id`),
+  KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

@@ -42,7 +42,7 @@ $minP = $route['min_participants'];
 $maxP = $route['max_participants'];
 $loc = (string) ($route['location'] ?? '');
 $imgResolved = resolveRouteImageUrl(isset($route['image_url']) ? (string) $route['image_url'] : null);
-$book = (string) ($route['booking_url'] ?? '');
+$bookHref = routeBookingUrl($id);
 
 $noteLine = 'رحلة رياضية فلكية وثقافية';
 if ($loc !== '') {
@@ -163,11 +163,7 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <footer class="route-detail__footer-actions">
-        <?php if ($book !== ''): ?>
-        <a class="btn btn--primary btn--large" href="<?php echo htmlspecialchars($book, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">احجز الآن</a>
-        <?php else: ?>
-        <span class="btn btn--primary btn--large btn--disabled" aria-disabled="true">احجز الآن</span>
-        <?php endif; ?>
+        <a class="btn btn--primary btn--large" href="<?php echo htmlspecialchars($bookHref, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">احجز الآن</a>
         <a class="btn btn--muted btn--large" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">العودة للمسارات</a>
     </footer>
 </article>

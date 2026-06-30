@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/database.php';
+require_once __DIR__ . '/booking.php';
 
 /**
  * إضافة الأعمدة الجديدة للمشاريع التي أُنشئت قبل التحديث
