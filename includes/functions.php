@@ -422,6 +422,32 @@ function assetUrl(string $path): string
     return ($base !== '' ? $base . '/' : '/') . $path . $query . $fragment;
 }
 
+function assetStaticVersion(string $relativePath): string
+{
+    static $cache = [];
+    if (isset($cache[$relativePath])) {
+        return $cache[$relativePath];
+    }
+    $clean = ltrim(str_replace('\\', '/', $relativePath), '/');
+    $full = dirname(__DIR__) . '/' . $clean;
+    $cache[$relativePath] = is_file($full) ? (string) filemtime($full) : '1';
+    return $cache[$relativePath];
+}
+
+function assetStaticUrl(string $path): string
+{
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+    if (!preg_match('#\.(css|js)$#i', $path)) {
+        return assetUrl($path);
+    }
+    $url = assetUrl($path);
+    $version = assetStaticVersion($path);
+    $sep = strpos($url, '?') !== false ? '&' : '?';
+    return $url . $sep . 'v=' . rawurlencode($version);
+}
+
 /**
  * نوع المسار للعرض في الشارة
  */

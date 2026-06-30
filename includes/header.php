@@ -28,9 +28,9 @@ $bodyClass = $bodyClass ?? '';
     <meta name="application-name" content="<?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
     <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> — <?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl('assets/css/main.css'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars(assetStaticUrl('assets/css/main.css'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <?php foreach ($extraCss as $css): ?>
-    <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl($css), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars(assetStaticUrl($css), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <?php endforeach; ?>
 <?php foreach ($extraHeadLinks as $hl): ?>
     <link<?php

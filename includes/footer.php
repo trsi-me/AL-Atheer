@@ -12,12 +12,12 @@ $extraJs = $extraJs ?? [];
         <p class="site-footer__small">جميع الحقوق محفوظة © جمعية المشي والجري بالأحساء</p>
     </div>
 </footer>
-<script src="<?php echo htmlspecialchars(assetUrl('assets/js/main.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
-<script src="<?php echo htmlspecialchars(assetUrl('assets/js/cart.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
+<script src="<?php echo htmlspecialchars(assetStaticUrl('assets/js/main.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
+<script src="<?php echo htmlspecialchars(assetStaticUrl('assets/js/cart.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
 <?php if (!empty($extraJs)): ?>
 <?php foreach ($extraJs as $js): ?>
 <?php
-    $jsSrc = (preg_match('#^https?://#i', $js)) ? $js : assetUrl($js);
+    $jsSrc = assetStaticUrl($js);
 ?>
 <script src="<?php echo htmlspecialchars($jsSrc, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
 <?php endforeach; ?>

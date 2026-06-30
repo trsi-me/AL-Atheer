@@ -164,42 +164,63 @@
             showStep(validateStep1() ? 2 : 1);
             return;
         }
+        if (currentStep !== 3) {
+            showStep(3);
+            return;
+        }
 
         showError('');
         if (bookingLoading) {
             bookingLoading.hidden = false;
         }
 
-        var formData = new FormData(form);
+        var submitButtons = form.querySelectorAll('button[type="submit"]');
+        submitButtons.forEach(function (btn) {
+            btn.disabled = true;
+        });
 
-        window.setTimeout(function () {
-            fetch(config.submitUrl, {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            })
-                .then(function (res) {
-                    return res.json().then(function (data) {
-                        return { ok: res.ok, data: data };
-                    });
-                })
-                .then(function (result) {
-                    if (bookingLoading) {
-                        bookingLoading.hidden = true;
-                    }
-                    if (result.data && result.data.ok && result.data.redirect) {
-                        window.location.href = result.data.redirect;
-                        return;
-                    }
-                    showError((result.data && result.data.message) || 'تعذّر إتمام الطلب.');
-                })
-                .catch(function () {
-                    if (bookingLoading) {
-                        bookingLoading.hidden = true;
-                    }
-                    showError('حدث خطأ في الاتصال. حاول مرة أخرى.');
+        var formData = new FormData(form);
+        var controller = new AbortController();
+        var timeoutId = window.setTimeout(function () {
+            controller.abort();
+        }, 20000);
+
+        fetch(config.submitUrl, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            signal: controller.signal
+        })
+            .then(function (res) {
+                return res.json().then(function (data) {
+                    return { ok: res.ok, data: data };
                 });
-        }, 1200);
+            })
+            .then(function (result) {
+                if (result.data && result.data.ok && result.data.redirect) {
+                    window.location.href = result.data.redirect;
+                    return;
+                }
+                if (bookingLoading) {
+                    bookingLoading.hidden = true;
+                }
+                submitButtons.forEach(function (btn) {
+                    btn.disabled = false;
+                });
+                showError((result.data && result.data.message) || 'تعذّر إتمام الطلب.');
+            })
+            .catch(function () {
+                if (bookingLoading) {
+                    bookingLoading.hidden = true;
+                }
+                submitButtons.forEach(function (btn) {
+                    btn.disabled = false;
+                });
+                showError('حدث خطأ في الاتصال. حاول مرة أخرى.');
+            })
+            .finally(function () {
+                window.clearTimeout(timeoutId);
+            });
     });
 
     updatePaymentView();
