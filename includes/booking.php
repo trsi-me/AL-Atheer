@@ -12,6 +12,7 @@ function atheerEnsureBookingsSchema(PDO $pdo): void
     $pdo->exec("CREATE TABLE IF NOT EXISTS bookings (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         booking_ref VARCHAR(24) NOT NULL,
+        order_ref VARCHAR(24) NULL,
         route_id INT UNSIGNED NOT NULL,
         full_name VARCHAR(255) NOT NULL,
         phone VARCHAR(20) NOT NULL,
@@ -27,13 +28,23 @@ function atheerEnsureBookingsSchema(PDO $pdo): void
         PRIMARY KEY (id),
         UNIQUE KEY uq_booking_ref (booking_ref),
         KEY idx_route_id (route_id),
-        KEY idx_created_at (created_at)
+        KEY idx_created_at (created_at),
+        KEY idx_order_ref (order_ref)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    try {
+        $pdo->exec('ALTER TABLE bookings ADD COLUMN order_ref VARCHAR(24) NULL');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        if (stripos($msg, 'Duplicate column') === false && stripos($msg, 'duplicate column name') === false) {
+            throw $e;
+        }
+    }
 }
 
 function routeBookingUrl(int $routeId): string
 {
-    return assetUrl('book.php?route=' . $routeId);
+    return cartAddUrl($routeId);
 }
 
 function isRouteBookingOpen(array $route): bool
@@ -228,6 +239,164 @@ function getBookingByRef(PDO $pdo, string $ref): ?array
     $stmt->execute(['ref' => $ref]);
     $row = $stmt->fetch();
     return $row ?: null;
+}
+
+function validateCheckoutInput(array $input): array
+{
+    $errors = [];
+    $name = trim((string) ($input['full_name'] ?? ''));
+    $phone = normalizePhone((string) ($input['phone'] ?? ''));
+    $email = trim((string) ($input['email'] ?? ''));
+    $method = (string) ($input['payment_method'] ?? '');
+    $notes = trim((string) ($input['notes'] ?? ''));
+
+    if ($name === '' || mb_strlen($name, 'UTF-8') < 3) {
+        $errors[] = 'أدخل الاسم الكامل (3 أحرف على الأقل).';
+    }
+    if (!preg_match('/^05\d{8}$/', $phone)) {
+        $errors[] = 'أدخل رقم جوال سعودي صحيح (مثال: 05xxxxxxxx).';
+    }
+    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'البريد الإلكتروني غير صالح.';
+    }
+    if (!array_key_exists($method, paymentMethodsCatalog())) {
+        $errors[] = 'اختر طريقة دفع صالحة.';
+    }
+    if (in_array($method, ['mada', 'card'], true)) {
+        $cardNumber = preg_replace('/\D+/', '', (string) ($input['card_number'] ?? '')) ?? '';
+        $expiry = trim((string) ($input['card_expiry'] ?? ''));
+        $cvv = trim((string) ($input['card_cvv'] ?? ''));
+        if (strlen($cardNumber) < 15) {
+            $errors[] = 'رقم البطاقة غير مكتمل.';
+        }
+        if (!preg_match('/^(0[1-9]|1[0-2])\/\d{2}$/', $expiry)) {
+            $errors[] = 'تاريخ الانتهاء بصيغة MM/YY.';
+        }
+        if (!preg_match('/^\d{3,4}$/', $cvv)) {
+            $errors[] = 'رمز الأمان CVV غير صالح.';
+        }
+    }
+
+    return [
+        'errors' => $errors,
+        'data' => [
+            'full_name' => $name,
+            'phone' => $phone,
+            'email' => $email === '' ? null : $email,
+            'payment_method' => $method,
+            'notes' => $notes === '' ? null : $notes,
+        ],
+    ];
+}
+
+function generateOrderRef(PDO $pdo): string
+{
+    do {
+        $ref = 'ORD-' . date('ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 6));
+        $chk = $pdo->prepare('SELECT id FROM bookings WHERE order_ref = :r LIMIT 1');
+        $chk->execute(['r' => $ref]);
+        $exists = $chk->fetch();
+    } while ($exists);
+    return $ref;
+}
+
+function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
+{
+    atheerEnsureBookingsSchema($pdo);
+    if (count($cartLines) === 0) {
+        throw new RuntimeException('السلة فارغة');
+    }
+
+    $orderRef = generateOrderRef($pdo);
+    $grandTotal = 0.0;
+    $items = [];
+    $lineNo = 0;
+
+    $sql = 'INSERT INTO bookings (
+        booking_ref, order_ref, route_id, full_name, phone, email, participants,
+        unit_price, total_amount, payment_method, payment_status, notes, paid_at
+    ) VALUES (
+        :booking_ref, :order_ref, :route_id, :full_name, :phone, :email, :participants,
+        :unit_price, :total_amount, :payment_method, :payment_status, :notes, :paid_at
+    )';
+
+    $stmt = $pdo->prepare($sql);
+    $paidAt = date('Y-m-d H:i:s');
+
+    foreach ($cartLines as $line) {
+        $lineNo++;
+        $route = $line['route'];
+        $participants = (int) $line['participants'];
+        $unit = (float) $line['unit_price'];
+        $lineTotal = round($unit * $participants, 2);
+        $bookingRef = $orderRef . '-L' . $lineNo;
+
+        $stmt->execute([
+            'booking_ref' => $bookingRef,
+            'order_ref' => $orderRef,
+            'route_id' => (int) $route['id'],
+            'full_name' => $customer['full_name'],
+            'phone' => $customer['phone'],
+            'email' => $customer['email'],
+            'participants' => $participants,
+            'unit_price' => $unit,
+            'total_amount' => $lineTotal,
+            'payment_method' => $customer['payment_method'],
+            'payment_status' => 'paid',
+            'notes' => $customer['notes'],
+            'paid_at' => $paidAt,
+        ]);
+
+        $grandTotal += $lineTotal;
+        $items[] = [
+            'booking_ref' => $bookingRef,
+            'route_id' => (int) $route['id'],
+            'route_name' => (string) $route['name'],
+            'participants' => $participants,
+            'line_total' => $lineTotal,
+        ];
+    }
+
+    return [
+        'order_ref' => $orderRef,
+        'total_amount' => round($grandTotal, 2),
+        'payment_method' => $customer['payment_method'],
+        'items' => $items,
+        'full_name' => $customer['full_name'],
+        'phone' => $customer['phone'],
+    ];
+}
+
+function getOrderByRef(PDO $pdo, string $orderRef): ?array
+{
+    atheerEnsureBookingsSchema($pdo);
+    $stmt = $pdo->prepare('SELECT b.*, r.name AS route_name, r.type AS route_type
+        FROM bookings b
+        INNER JOIN routes r ON r.id = b.route_id
+        WHERE b.order_ref = :ref
+        ORDER BY b.id ASC');
+    $stmt->execute(['ref' => $orderRef]);
+    $rows = $stmt->fetchAll();
+    if (count($rows) === 0) {
+        return null;
+    }
+    $first = $rows[0];
+    $total = 0.0;
+    $items = [];
+    foreach ($rows as $row) {
+        $total += (float) $row['total_amount'];
+        $items[] = $row;
+    }
+    return [
+        'order_ref' => $orderRef,
+        'full_name' => $first['full_name'],
+        'phone' => $first['phone'],
+        'email' => $first['email'],
+        'payment_method' => $first['payment_method'],
+        'created_at' => $first['created_at'],
+        'total_amount' => round($total, 2),
+        'items' => $items,
+    ];
 }
 
 function getAllBookings(PDO $pdo, int $limit = 100): array

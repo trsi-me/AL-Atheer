@@ -8,6 +8,10 @@ if (!function_exists('assetUrl')) {
     require_once __DIR__ . '/functions.php';
 }
 
+cartEnsureSession();
+$cartItemCount = cartCount();
+$cartApiUrl = assetUrl('api/cart.php');
+
 $pageTitle = $pageTitle ?? 'المسارات';
 $siteName  = 'جمعية المشي والجري بالأحساء';
 $extraCss  = $extraCss ?? [];
@@ -36,7 +40,7 @@ $bodyClass = $bodyClass ?? '';
     ?>>
 <?php endforeach; ?>
 </head>
-<body class="<?php echo htmlspecialchars($bodyClass, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
+<body class="<?php echo htmlspecialchars($bodyClass, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" data-cart-api="<?php echo htmlspecialchars($cartApiUrl, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <header class="site-header">
     <div class="site-header__inner">
         <a class="site-header__brand" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
@@ -44,6 +48,11 @@ $bodyClass = $bodyClass ?? '';
         </a>
         <nav class="site-header__nav" aria-label="التنقل الرئيسي">
             <a href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">الرئيسية</a>
+            <a class="site-header__cart" href="<?php echo htmlspecialchars(cartPageUrl(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" aria-label="سلة التسوق">
+                <span class="site-header__cart-icon" aria-hidden="true">🛒</span>
+                <span class="site-header__cart-label">السلة</span>
+                <span class="site-header__cart-badge" id="cart-badge"<?php echo $cartItemCount < 1 ? ' hidden' : ''; ?>><?php echo $cartItemCount; ?></span>
+            </a>
         </nav>
     </div>
 </header>

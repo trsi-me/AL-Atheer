@@ -39,6 +39,7 @@ DROP TABLE IF EXISTS `bookings`;
 CREATE TABLE `bookings` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `booking_ref` VARCHAR(24) NOT NULL,
+  `order_ref` VARCHAR(24) NULL,
   `route_id` INT UNSIGNED NOT NULL,
   `full_name` VARCHAR(255) NOT NULL,
   `phone` VARCHAR(20) NOT NULL,
@@ -54,7 +55,8 @@ CREATE TABLE `bookings` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_booking_ref` (`booking_ref`),
   KEY `idx_route_id` (`route_id`),
-  KEY `idx_created_at` (`created_at`)
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_order_ref` (`order_ref`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `settings`;

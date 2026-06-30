@@ -139,6 +139,39 @@ h2, h3 {
     color: #fff;
 }
 
+.site-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.site-header__cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.site-header__cart-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 50px;
+    background: var(--color-secondary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.site-header__cart-badge[hidden] {
+    display: none;
+}
+
 /* فوتر */
 .site-footer {
     background: var(--color-dark);

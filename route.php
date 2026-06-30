@@ -42,7 +42,6 @@ $minP = $route['min_participants'];
 $maxP = $route['max_participants'];
 $loc = (string) ($route['location'] ?? '');
 $imgResolved = resolveRouteImageUrl(isset($route['image_url']) ? (string) $route['image_url'] : null);
-$bookHref = routeBookingUrl($id);
 
 $noteLine = 'رحلة رياضية فلكية وثقافية';
 if ($loc !== '') {
@@ -163,7 +162,8 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <footer class="route-detail__footer-actions">
-        <a class="btn btn--primary btn--large" href="<?php echo htmlspecialchars($bookHref, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">احجز الآن</a>
+        <button type="button" class="btn btn--primary btn--large" data-add-to-cart data-route-id="<?php echo $id; ?>">أضف للسلة</button>
+        <a class="btn btn--secondary btn--large" href="<?php echo htmlspecialchars(cartPageUrl(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">عرض السلة</a>
         <a class="btn btn--muted btn--large" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">العودة للمسارات</a>
     </footer>
 </article>

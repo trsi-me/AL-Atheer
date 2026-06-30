@@ -34,6 +34,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <table class="admin-table">
             <thead>
                 <tr>
+                    <th>رقم الطلب</th>
                     <th>رقم الحجز</th>
                     <th>المسار</th>
                     <th>الاسم</th>
@@ -47,6 +48,7 @@ require dirname(__DIR__) . '/includes/header.php';
             <tbody>
             <?php foreach ($bookings as $b): ?>
                 <tr>
+                    <td><?php echo htmlspecialchars((string) ($b['order_ref'] ?? '—'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) $b['booking_ref'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) $b['route_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) $b['full_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>

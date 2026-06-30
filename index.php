@@ -31,7 +31,6 @@ require __DIR__ . '/includes/header.php';
         $typeLabel = routeTypeLabel((string) $r['type']);
         $desc = truncateText((string) ($r['description'] ?? ''), 140);
         $imgResolved = resolveRouteImageUrl(isset($r['image_url']) ? (string) $r['image_url'] : null);
-        $bookHref = routeBookingUrl($rid);
         $detailHref = assetUrl('route.php?id=' . $rid);
         ?>
         <article class="route-card">
@@ -47,7 +46,7 @@ require __DIR__ . '/includes/header.php';
                 <h2 class="route-card__name"><?php echo htmlspecialchars((string) $r['name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h2>
                 <p class="route-card__desc"><?php echo htmlspecialchars($desc, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
                 <div class="route-card__actions">
-                    <a class="btn btn--primary" href="<?php echo htmlspecialchars($bookHref, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">احجز</a>
+                    <button type="button" class="btn btn--primary" data-add-to-cart data-route-id="<?php echo $rid; ?>">أضف للسلة</button>
                     <a class="btn btn--secondary" href="<?php echo htmlspecialchars($detailHref, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">تفاصيل</a>
                 </div>
             </div>

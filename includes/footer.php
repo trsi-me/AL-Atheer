@@ -13,6 +13,7 @@ $extraJs = $extraJs ?? [];
     </div>
 </footer>
 <script src="<?php echo htmlspecialchars(assetUrl('assets/js/main.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
+<script src="<?php echo htmlspecialchars(assetUrl('assets/js/cart.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>
 <?php if (!empty($extraJs)): ?>
 <?php foreach ($extraJs as $js): ?>
 <?php
