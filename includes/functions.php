@@ -9,9 +9,28 @@ require_once dirname(__DIR__) . '/config/database.php';
 require_once __DIR__ . '/booking.php';
 require_once __DIR__ . '/cart.php';
 
-/**
- * إضافة الأعمدة الجديدة للمشاريع التي أُنشئت قبل التحديث
- */
+function siteDisplayName(): string
+{
+    return 'جمعية المشي والجري بالأحساء';
+}
+
+function atheerEnsureSiteBranding(PDO $pdo): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        atheerEnsureSchema($pdo);
+        $title = siteDisplayName();
+        $sql = "INSERT INTO settings (key_name, key_value) VALUES ('site_title', :title)
+            ON DUPLICATE KEY UPDATE key_value = IF(key_value = 'الأثير', :title2, key_value)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['title' => $title, 'title2' => $title]);
+    } catch (Throwable $e) {
+    }
+}
 function atheerEnsureSchema(PDO $pdo): void
 {
     static $done = false;
@@ -265,6 +284,7 @@ function getAllRoutes(): array
 {
     $pdo = get_pdo();
     atheerEnsureSchema($pdo);
+    atheerEnsureSiteBranding($pdo);
     ensureDefaultRoutesSeeded($pdo);
     atheerFixLegacyImagePaths($pdo);
     atheerApplyReferenceContentV2($pdo);
@@ -285,6 +305,7 @@ function getRouteById(int $id): ?array
     }
     $pdo = get_pdo();
     atheerEnsureSchema($pdo);
+    atheerEnsureSiteBranding($pdo);
     ensureDefaultRoutesSeeded($pdo);
     atheerFixLegacyImagePaths($pdo);
     atheerApplyReferenceContentV2($pdo);

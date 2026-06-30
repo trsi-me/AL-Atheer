@@ -15,6 +15,7 @@ if (empty($_SESSION['atheer_admin'])) {
 
 $pdo = get_pdo();
 atheerEnsureSchema($pdo);
+atheerEnsureSiteBranding($pdo);
 ensureDefaultRoutesSeeded($pdo);
 atheerFixLegacyImagePaths($pdo);
 atheerApplyReferenceContentV2($pdo);

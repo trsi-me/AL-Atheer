@@ -12,6 +12,7 @@ if (empty($_SESSION['atheer_admin'])) {
 }
 
 $pdo = get_pdo();
+atheerEnsureSiteBranding($pdo);
 $bookings = getAllBookings($pdo, 200);
 
 $pageTitle = 'الحجوزات';

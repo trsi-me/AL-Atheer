@@ -69,7 +69,7 @@ CREATE TABLE `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES
-('site_title', 'الأثير'),
+('site_title', 'جمعية المشي والجري بالأحساء'),
 ('admin_note', 'لوحة التحكم — جمعية المشي والجري بالأحساء')
 ON DUPLICATE KEY UPDATE `key_name` = VALUES(`key_name`);
 

@@ -9,11 +9,12 @@ if (!function_exists('assetUrl')) {
 }
 
 cartEnsureSession();
+atheerEnsureSiteBranding(get_pdo());
 $cartItemCount = cartCount();
 $cartApiUrl = assetUrl('api/cart.php');
 
 $pageTitle = $pageTitle ?? 'المسارات';
-$siteName  = 'جمعية المشي والجري بالأحساء';
+$siteName  = siteDisplayName();
 $extraCss  = $extraCss ?? [];
 $extraHeadLinks = $extraHeadLinks ?? [];
 $bodyClass = $bodyClass ?? '';
@@ -24,6 +25,7 @@ $bodyClass = $bodyClass ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="منصة عرض مسارات جمعية المشي والجري بالأحساء — رياضية، فلكية، ثقافية، وغيرها.">
+    <meta name="application-name" content="<?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
     <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> — <?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl('assets/css/main.css'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <?php foreach ($extraCss as $css): ?>
