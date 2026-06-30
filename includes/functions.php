@@ -422,16 +422,9 @@ function assetUrl(string $path): string
     return ($base !== '' ? $base . '/' : '/') . $path . $query . $fragment;
 }
 
-function assetStaticVersion(string $relativePath): string
+function assetBuildVersion(): string
 {
-    static $cache = [];
-    if (isset($cache[$relativePath])) {
-        return $cache[$relativePath];
-    }
-    $clean = ltrim(str_replace('\\', '/', $relativePath), '/');
-    $full = dirname(__DIR__) . '/' . $clean;
-    $cache[$relativePath] = is_file($full) ? (string) filemtime($full) : '1';
-    return $cache[$relativePath];
+    return '1';
 }
 
 function assetStaticUrl(string $path): string
@@ -443,9 +436,8 @@ function assetStaticUrl(string $path): string
         return assetUrl($path);
     }
     $url = assetUrl($path);
-    $version = assetStaticVersion($path);
     $sep = strpos($url, '?') !== false ? '&' : '?';
-    return $url . $sep . 'v=' . rawurlencode($version);
+    return $url . $sep . 'v=' . assetBuildVersion();
 }
 
 /**
