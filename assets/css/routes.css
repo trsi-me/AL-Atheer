@@ -73,7 +73,7 @@
 }
 
 .route-card__media--placeholder {
-    background: linear-gradient(145deg, #e8f4f8 0%, #e6f7ec 100%);
+    background: linear-gradient(145deg, #e8f4f8 0%, #e8f2f9 100%);
 }
 
 .route-card__placeholder {
@@ -87,7 +87,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: var(--color-secondary);
+    background: var(--color-primary-dark);
     color: #fff;
     font-size: 12px;
     font-weight: 700;

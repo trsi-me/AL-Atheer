@@ -6,8 +6,8 @@
 SET NAMES utf8mb4;
 SET CHARACTER SET utf8mb4;
 
-CREATE DATABASE IF NOT EXISTS `u741730784_alatheer` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `u741730784_alatheer`;
+CREATE DATABASE IF NOT EXISTS `alatheer_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `alatheer_db`;
 
 DROP TABLE IF EXISTS `routes`;
 CREATE TABLE `routes` (

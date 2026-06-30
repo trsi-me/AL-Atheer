@@ -27,6 +27,7 @@ $bodyClass = $bodyClass ?? '';
     <meta name="description" content="منصة عرض مسارات جمعية المشي والجري بالأحساء — رياضية، فلكية، ثقافية، وغيرها.">
     <meta name="application-name" content="<?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
     <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> — <?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl('assets/css/main.css'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <?php foreach ($extraCss as $css): ?>
     <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl($css), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
@@ -51,7 +52,7 @@ $bodyClass = $bodyClass ?? '';
         <nav class="site-header__nav" aria-label="التنقل الرئيسي">
             <a href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">الرئيسية</a>
             <a class="site-header__cart" href="<?php echo htmlspecialchars(cartPageUrl(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" aria-label="سلة التسوق">
-                <span class="site-header__cart-icon" aria-hidden="true">🛒</span>
+                <i class="fa-solid fa-cart-shopping site-header__cart-icon" aria-hidden="true"></i>
                 <span class="site-header__cart-label">السلة</span>
                 <span class="site-header__cart-badge" id="cart-badge"<?php echo $cartItemCount < 1 ? ' hidden' : ''; ?>><?php echo $cartItemCount; ?></span>
             </a>

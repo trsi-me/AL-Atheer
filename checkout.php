@@ -124,7 +124,7 @@ require __DIR__ . '/includes/header.php';
                         </div>
                         <button type="submit" class="btn btn--primary btn--large">ادفع <span id="pay-amount-label"><?php echo htmlspecialchars(formatMoney($subtotal), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span></button>
                     </div>
-                    <p class="booking-secure"><span aria-hidden="true">🔒</span> اتصال مشفّر — بيانات الدفع لا تُخزَّن على الخادم.</p>
+                    <p class="booking-secure"><i class="fa-solid fa-lock" aria-hidden="true"></i> اتصال مشفّر — بيانات الدفع لا تُخزَّن على الخادم.</p>
                     <p class="booking-error" id="booking-error" role="alert" hidden></p>
                     <div class="booking-panel__actions">
                         <button type="button" class="btn btn--muted" data-prev-step>رجوع</button>

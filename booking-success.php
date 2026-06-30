@@ -30,7 +30,7 @@ if ($order === null && $booking === null):
 </section>
 <?php elseif ($order !== null): ?>
 <section class="booking-success">
-    <div class="booking-success__icon" aria-hidden="true">✓</div>
+    <div class="booking-success__icon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
     <h1 class="booking-success__title">تم تأكيد طلبك بنجاح</h1>
     <p class="booking-success__lead">شكراً لك — تم استلام الدفع وتسجيل جميع المسارات في طلبك.</p>
 
@@ -64,7 +64,7 @@ if ($order === null && $booking === null):
     $routeId = (int) $booking['route_id'];
 ?>
 <section class="booking-success">
-    <div class="booking-success__icon" aria-hidden="true">✓</div>
+    <div class="booking-success__icon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
     <h1 class="booking-success__title">تم تأكيد حجزك بنجاح</h1>
     <p class="booking-success__lead">شكراً لك — تم استلام الدفع وتسجيل مشاركتك في المسار.</p>
 
