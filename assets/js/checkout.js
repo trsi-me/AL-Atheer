@@ -14,12 +14,13 @@
         return;
     }
 
+    var isSimulation = !!config.simulation;
     var currentStep = 1;
     var payAmountLabel = document.getElementById('pay-amount-label');
+    var payMethodLabel = document.getElementById('pay-method-label');
     var payWallet = document.getElementById('pay-wallet');
     var payCardForm = document.getElementById('pay-card-form');
     var bookingError = document.getElementById('booking-error');
-    var bookingLoading = document.getElementById('booking-loading');
     var stepIndicators = document.querySelectorAll('[data-step-indicator]');
     var steps = document.querySelectorAll('.booking-step');
 
@@ -54,7 +55,27 @@
         return checked ? checked.value : 'mada';
     }
 
+    function getSelectedPaymentLabel() {
+        var checked = form.querySelector('input[name="payment_method"]:checked');
+        if (!checked) {
+            return '';
+        }
+        var card = checked.closest('.pay-method');
+        if (!card) {
+            return '';
+        }
+        var labelEl = card.querySelector('.pay-method__label');
+        return labelEl ? labelEl.textContent.trim() : '';
+    }
+
     function updatePaymentView() {
+        if (isSimulation) {
+            if (payMethodLabel) {
+                var label = getSelectedPaymentLabel();
+                payMethodLabel.textContent = 'طريقة الدفع: ' + (label || 'مدى');
+            }
+            return;
+        }
         var method = getSelectedPaymentMethod();
         var isCard = method === 'mada' || method === 'card';
         if (payWallet) {
@@ -159,21 +180,29 @@
     }
 
     form.addEventListener('submit', function (ev) {
-        ev.preventDefault();
         if (!validateStep1() || !validateStep2()) {
+            ev.preventDefault();
             showStep(validateStep1() ? 2 : 1);
             return;
         }
         if (currentStep !== 3) {
+            ev.preventDefault();
             showStep(3);
             return;
         }
 
         showError('');
-        if (bookingLoading) {
-            bookingLoading.hidden = false;
+
+        if (isSimulation) {
+            var simBtn = form.querySelector('.pay-simulation__submit');
+            if (simBtn) {
+                simBtn.disabled = true;
+                simBtn.textContent = 'جاري التأكيد...';
+            }
+            return;
         }
 
+        ev.preventDefault();
         var submitButtons = form.querySelectorAll('button[type="submit"]');
         submitButtons.forEach(function (btn) {
             btn.disabled = true;
@@ -192,7 +221,13 @@
             signal: controller.signal
         })
             .then(function (res) {
-                return res.json().then(function (data) {
+                return res.text().then(function (text) {
+                    var data = null;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (parseErr) {
+                        data = { ok: false, message: 'استجابة غير متوقعة من الخادم.' };
+                    }
                     return { ok: res.ok, data: data };
                 });
             })
@@ -201,18 +236,12 @@
                     window.location.href = result.data.redirect;
                     return;
                 }
-                if (bookingLoading) {
-                    bookingLoading.hidden = true;
-                }
                 submitButtons.forEach(function (btn) {
                     btn.disabled = false;
                 });
                 showError((result.data && result.data.message) || 'تعذّر إتمام الطلب.');
             })
             .catch(function () {
-                if (bookingLoading) {
-                    bookingLoading.hidden = true;
-                }
                 submitButtons.forEach(function (btn) {
                     btn.disabled = false;
                 });

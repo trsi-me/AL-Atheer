@@ -134,3 +134,22 @@ function checkoutPageUrl(): string
 {
     return assetUrl('checkout.php');
 }
+
+function checkoutCompleteUrl(): string
+{
+    return assetUrl('checkout_complete.php');
+}
+
+function checkoutSetFlashError(string $message): void
+{
+    cartEnsureSession();
+    $_SESSION['checkout_flash_error'] = $message;
+}
+
+function checkoutPullFlashError(): string
+{
+    cartEnsureSession();
+    $msg = (string) ($_SESSION['checkout_flash_error'] ?? '');
+    unset($_SESSION['checkout_flash_error']);
+    return $msg;
+}

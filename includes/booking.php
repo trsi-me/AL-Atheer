@@ -42,6 +42,11 @@ function atheerEnsureBookingsSchema(PDO $pdo): void
     }
 }
 
+function paymentIsSimulation(): bool
+{
+    return true;
+}
+
 function routeBookingUrl(int $routeId): string
 {
     return cartAddUrl($routeId);
@@ -159,7 +164,7 @@ function validateBookingInput(array $route, array $input): array
         $errors[] = 'اختر طريقة دفع صالحة.';
     }
 
-    if (in_array($method, ['mada', 'card'], true)) {
+    if (!paymentIsSimulation() && in_array($method, ['mada', 'card'], true)) {
         $cardNumber = preg_replace('/\D+/', '', (string) ($input['card_number'] ?? '')) ?? '';
         $expiry = trim((string) ($input['card_expiry'] ?? ''));
         $cvv = trim((string) ($input['card_cvv'] ?? ''));
@@ -262,7 +267,7 @@ function validateCheckoutInput(array $input): array
     if (!array_key_exists($method, paymentMethodsCatalog())) {
         $errors[] = 'اختر طريقة دفع صالحة.';
     }
-    if (in_array($method, ['mada', 'card'], true)) {
+    if (!paymentIsSimulation() && in_array($method, ['mada', 'card'], true)) {
         $cardNumber = preg_replace('/\D+/', '', (string) ($input['card_number'] ?? '')) ?? '';
         $expiry = trim((string) ($input['card_expiry'] ?? ''));
         $cvv = trim((string) ($input['card_cvv'] ?? ''));
@@ -322,6 +327,11 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
 
     $stmt = $pdo->prepare($sql);
     $paidAt = date('Y-m-d H:i:s');
+    $notes = $customer['notes'];
+    if (paymentIsSimulation()) {
+        $simNote = 'دفع محاكى — لا يُخصم مبلغ حقيقي';
+        $notes = $notes !== null && $notes !== '' ? $notes . ' | ' . $simNote : $simNote;
+    }
 
     foreach ($cartLines as $line) {
         $lineNo++;
@@ -343,7 +353,7 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
             'total_amount' => $lineTotal,
             'payment_method' => $customer['payment_method'],
             'payment_status' => 'paid',
-            'notes' => $customer['notes'],
+            'notes' => $notes,
             'paid_at' => $paidAt,
         ]);
 
@@ -410,4 +420,20 @@ function getAllBookings(PDO $pdo, int $limit = 100): array
     $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll();
+}
+
+function processCheckoutOrder(): array
+{
+    $lines = cartGetLines();
+    if (count($lines) === 0) {
+        throw new RuntimeException('سلة التسوق فارغة.');
+    }
+    $validated = validateCheckoutInput($_POST);
+    if (count($validated['errors']) > 0) {
+        throw new RuntimeException(implode(' ', $validated['errors']));
+    }
+    $pdo = get_pdo();
+    $result = createOrderFromCart($pdo, $lines, $validated['data']);
+    cartClear();
+    return $result;
 }

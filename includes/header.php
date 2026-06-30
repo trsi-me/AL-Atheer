@@ -33,6 +33,11 @@ $bodyClass = $bodyClass ?? '';
     <link rel="stylesheet" href="<?php echo htmlspecialchars(assetStaticUrl($css), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <?php endforeach; ?>
 <?php foreach ($extraHeadLinks as $hl): ?>
+<?php
+    if (isset($hl['href']) && !preg_match('#^https?://#i', (string) $hl['href'])) {
+        $hl['href'] = assetStaticUrl((string) $hl['href']);
+    }
+?>
     <link<?php
         foreach ($hl as $attr => $val) {
             if ($val === null || $val === '') {
@@ -47,7 +52,7 @@ $bodyClass = $bodyClass ?? '';
 <header class="site-header">
     <div class="site-header__inner">
         <a class="site-header__brand" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
-            <img class="site-header__logo" src="<?php echo htmlspecialchars(assetUrl('assets/images/widelogo.png'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" width="280" height="72">
+            <img class="site-header__logo" src="<?php echo htmlspecialchars(assetStaticUrl('assets/images/widelogo.png'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" width="280" height="72">
         </a>
         <nav class="site-header__nav" aria-label="التنقل الرئيسي">
             <a href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">الرئيسية</a>

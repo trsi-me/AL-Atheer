@@ -17,9 +17,13 @@ $bodyClass = 'page-checkout';
 $paymentMethods = paymentMethodsCatalog();
 $subtotal = cartSubtotal();
 
+$checkoutError = checkoutPullFlashError();
+$isSimulation = paymentIsSimulation();
+
 $checkoutConfig = [
     'unitPrice' => $subtotal,
-    'submitUrl' => assetUrl('api/checkout_submit.php'),
+    'simulation' => $isSimulation,
+    'completeUrl' => checkoutCompleteUrl(),
 ];
 
 require __DIR__ . '/includes/header.php';
@@ -28,7 +32,7 @@ require __DIR__ . '/includes/header.php';
 <section class="booking checkout-page" id="checkout-app">
     <header class="booking__head">
         <h1 class="booking__title">إتمام الشراء</h1>
-        <p class="booking__lead">راجع طلبك وادفع بأمان — <?php echo count($lines); ?> مسار في السلة.</p>
+        <p class="booking__lead"><?php if ($isSimulation): ?>راجع طلبك وأكد الحجز — دفع محاكى بدون خصم حقيقي.<?php else: ?>راجع طلبك وادفع بأمان — <?php echo count($lines); ?> مسار في السلة.<?php endif; ?></p>
     </header>
 
     <ol class="booking-steps" aria-label="خطوات الدفع">
@@ -56,7 +60,10 @@ require __DIR__ . '/includes/header.php';
         </aside>
 
         <div class="booking-panel">
-            <form class="booking-form" id="booking-form" novalidate>
+            <?php if ($checkoutError !== ''): ?>
+            <p class="booking-error booking-error--page" role="alert"><?php echo htmlspecialchars($checkoutError, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
+            <?php endif; ?>
+            <form class="booking-form" id="booking-form" method="post" action="<?php echo htmlspecialchars(checkoutCompleteUrl(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" novalidate>
                 <div class="booking-step is-active" data-step="1">
                     <h2 class="booking-panel__title">بيانات المشتري</h2>
                     <label class="booking-field">
@@ -102,7 +109,16 @@ require __DIR__ . '/includes/header.php';
                 </div>
 
                 <div class="booking-step" data-step="3" hidden>
-                    <h2 class="booking-panel__title">تأكيد الدفع</h2>
+                    <h2 class="booking-panel__title"><?php echo $isSimulation ? 'تأكيد الحجز' : 'تأكيد الدفع'; ?></h2>
+                    <?php if ($isSimulation): ?>
+                    <div class="pay-simulation">
+                        <p class="pay-simulation__badge"><i class="fa-solid fa-flask" aria-hidden="true"></i> وضع محاكاة</p>
+                        <p class="pay-simulation__text">هذا حجز تجريبي للعرض فقط. لا يُخصم أي مبلغ حقيقي ولا تُرسل بيانات لأي بوابة دفع.</p>
+                        <p class="pay-simulation__total">المبلغ: <strong><?php echo htmlspecialchars(formatMoney($subtotal), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></strong> (للعرض فقط)</p>
+                        <p class="pay-simulation__method" id="pay-method-label">طريقة الدفع: مدى</p>
+                        <button type="submit" class="btn btn--primary btn--large pay-simulation__submit">تأكيد الحجز</button>
+                    </div>
+                    <?php else: ?>
                     <div class="pay-wallet" id="pay-wallet" hidden>
                         <p class="pay-wallet__text">سيتم فتح محفظتك الرقمية لإتمام الدفع بأمان.</p>
                         <button type="submit" class="btn btn--primary btn--large pay-wallet__btn">ادفع الآن</button>
@@ -125,16 +141,13 @@ require __DIR__ . '/includes/header.php';
                         <button type="submit" class="btn btn--primary btn--large">ادفع <span id="pay-amount-label"><?php echo htmlspecialchars(formatMoney($subtotal), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span></button>
                     </div>
                     <p class="booking-secure"><i class="fa-solid fa-lock" aria-hidden="true"></i> اتصال مشفّر — بيانات الدفع لا تُخزَّن على الخادم.</p>
+                    <?php endif; ?>
                     <p class="booking-error" id="booking-error" role="alert" hidden></p>
                     <div class="booking-panel__actions">
                         <button type="button" class="btn btn--muted" data-prev-step>رجوع</button>
                     </div>
                 </div>
             </form>
-            <div class="booking-loading" id="booking-loading" hidden aria-live="polite">
-                <div class="booking-loading__spinner" aria-hidden="true"></div>
-                <p>جاري معالجة الدفع…</p>
-            </div>
         </div>
     </div>
 </section>

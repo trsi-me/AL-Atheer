@@ -424,7 +424,7 @@ function assetUrl(string $path): string
 
 function assetBuildVersion(): string
 {
-    return '1';
+    return '3';
 }
 
 function assetStaticUrl(string $path): string
@@ -432,7 +432,7 @@ function assetStaticUrl(string $path): string
     if (preg_match('#^https?://#i', $path)) {
         return $path;
     }
-    if (!preg_match('#\.(css|js)$#i', $path)) {
+    if (!preg_match('#\.(css|js|png|jpe?g|gif|webp|svg|woff2?)$#i', $path)) {
         return assetUrl($path);
     }
     $url = assetUrl($path);
