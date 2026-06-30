@@ -1,0 +1,6 @@
+config/database.local.php
+config/auth.local.php
+.env
+.DS_Store
+Thumbs.db
+*.log

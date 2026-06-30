@@ -1,0 +1,208 @@
+/**
+ * صفحة تفاصيل المسار
+ */
+
+.page-route-detail .route-detail {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.route-detail__header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.route-detail__title {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 12px;
+}
+
+.route-detail__intro {
+    font-size: 16px;
+    color: var(--color-text);
+    margin: 0 0 12px;
+    line-height: 1.7;
+}
+
+.route-detail__extra {
+    font-size: 16px;
+    color: #333;
+    margin: 0 0 16px;
+    line-height: 1.75;
+    text-align: right;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 14px 16px;
+}
+
+.route-detail__mapsec {
+    margin-bottom: 28px;
+}
+
+.route-detail__map-lead {
+    font-size: 14px;
+    color: var(--color-muted);
+    margin: 0 0 12px;
+    line-height: 1.6;
+}
+
+.route-map {
+    height: 380px;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--color-border);
+    z-index: 1;
+}
+
+.route-map-popup {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.route-map-popup a {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.leaflet-container {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.route-detail__note {
+    font-size: 14px;
+    color: var(--color-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.route-detail__facts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+    .route-detail__facts {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .route-detail__facts {
+        grid-template-columns: 1fr;
+    }
+}
+
+.fact-card {
+    background: #eef5f0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: 12px 14px;
+    text-align: center;
+    box-shadow: none;
+}
+
+.fact-card__label {
+    display: block;
+    font-size: 14px;
+    color: var(--color-muted);
+    margin-bottom: 6px;
+}
+
+.fact-card__value {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.3;
+}
+
+.route-detail__participants {
+    margin-bottom: 24px;
+}
+
+.route-detail__participants-text {
+    font-size: 16px;
+    margin: 0;
+}
+
+.route-detail__itinerary {
+    margin-bottom: 28px;
+}
+
+.route-detail__h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 12px;
+}
+
+.itinerary-day {
+    background: #fff;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+
+.itinerary-day__title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+.itinerary-day__list {
+    margin: 0;
+    padding: 0 20px 0 0;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.itinerary-day__list li {
+    margin-bottom: 6px;
+}
+
+.route-detail__json {
+    font-size: 14px;
+    direction: ltr;
+    text-align: left;
+    background: #fff;
+    padding: 12px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    overflow: auto;
+}
+
+.route-detail__fullimage {
+    margin-bottom: 28px;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.route-detail__fullimage--top {
+    margin-top: 0;
+}
+
+.route-detail__fullimage img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+}
+
+.route-detail__footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.route-detail--error {
+    text-align: center;
+    padding: 32px 16px;
+}
