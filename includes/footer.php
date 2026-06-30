@@ -8,8 +8,8 @@ $extraJs = $extraJs ?? [];
 </main>
 <footer class="site-footer">
     <div class="site-footer__inner">
-        <p>جمعية المشي والجري بالأحساء — منصة الأثير لعرض المسارات الرياضية والفلكية والثقافية.</p>
-        <p class="site-footer__small">جميع الحقوق محفوظة.</p>
+        <p>جمعية المشي والجري بالأحساء — عرض المسارات الرياضية والفلكية والثقافية.</p>
+        <p class="site-footer__small">جميع الحقوق محفوظة © جمعية المشي والجري بالأحساء</p>
     </div>
 </footer>
 <script src="<?php echo htmlspecialchars(assetUrl('assets/js/main.js'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"></script>

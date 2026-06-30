@@ -8,7 +8,8 @@ if (!function_exists('assetUrl')) {
     require_once __DIR__ . '/functions.php';
 }
 
-$pageTitle = $pageTitle ?? 'الأثير';
+$pageTitle = $pageTitle ?? 'المسارات';
+$siteName  = 'جمعية المشي والجري بالأحساء';
 $extraCss  = $extraCss ?? [];
 $extraHeadLinks = $extraHeadLinks ?? [];
 $bodyClass = $bodyClass ?? '';
@@ -18,7 +19,8 @@ $bodyClass = $bodyClass ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> — الأثير</title>
+    <meta name="description" content="منصة عرض مسارات جمعية المشي والجري بالأحساء — رياضية، فلكية، ثقافية، وغيرها.">
+    <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> — <?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl('assets/css/main.css'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 <?php foreach ($extraCss as $css): ?>
     <link rel="stylesheet" href="<?php echo htmlspecialchars(assetUrl($css), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
@@ -38,10 +40,7 @@ $bodyClass = $bodyClass ?? '';
 <header class="site-header">
     <div class="site-header__inner">
         <a class="site-header__brand" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
-            <span class="site-header__brand-text">
-                <span class="site-header__title">الأثير</span>
-                <span class="site-header__subtitle">مسارات جمعية المشي والجري بالأحساء</span>
-            </span>
+            <img class="site-header__logo" src="<?php echo htmlspecialchars(assetUrl('assets/images/widelogo.png'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($siteName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" width="280" height="72">
         </a>
         <nav class="site-header__nav" aria-label="التنقل الرئيسي">
             <a href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">الرئيسية</a>
