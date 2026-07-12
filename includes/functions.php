@@ -424,7 +424,7 @@ function assetUrl(string $path): string
 
 function assetBuildVersion(): string
 {
-    return '4';
+    return '5';
 }
 
 function assetStaticUrl(string $path): string
