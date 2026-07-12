@@ -37,9 +37,15 @@ if ($meeting === '') {
     $meeting = '—';
 }
 $price = $route['price'];
-$priceStr = ($price !== null && $price !== '') ? number_format((float) $price, 0, '.', '') . ' ريال' : '—';
+$priceStr = ($price !== null && $price !== '' && (float) $price > 0) ? number_format((float) $price, 0, '.', '') . ' ريال' : '00';
 $minP = $route['min_participants'];
 $maxP = $route['max_participants'];
+if ($minP === null || $minP === '') {
+    $minP = 25;
+}
+if ($maxP === null || $maxP === '') {
+    $maxP = 100;
+}
 $loc = (string) ($route['location'] ?? '');
 $imgResolved = resolveRouteImageUrl(isset($route['image_url']) ? (string) $route['image_url'] : null);
 

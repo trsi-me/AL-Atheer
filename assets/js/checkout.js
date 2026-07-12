@@ -26,7 +26,7 @@
 
     function formatMoney(amount) {
         if (!amount || amount <= 0) {
-            return 'مجاني';
+            return '00';
         }
         return amount.toLocaleString('ar-SA') + ' ريال';
     }
@@ -77,7 +77,7 @@
             return;
         }
         var method = getSelectedPaymentMethod();
-        var isCard = method === 'mada' || method === 'card';
+        var isCard = method === 'mada';
         if (payWallet) {
             payWallet.hidden = isCard;
         }
@@ -97,6 +97,8 @@
     function validateStep1() {
         var name = form.querySelector('[name="full_name"]');
         var phone = form.querySelector('[name="phone"]');
+        var civilId = form.querySelector('[name="civil_id"]');
+        var email = form.querySelector('[name="email"]');
         if (!name.value.trim() || name.value.trim().length < 3) {
             showError('أدخل الاسم الكامل.');
             name.focus();
@@ -106,6 +108,21 @@
         if (!/^05\d{8}$/.test(digits)) {
             showError('أدخل رقم جوال سعودي صحيح.');
             phone.focus();
+            return false;
+        }
+        var civilDigits = civilId ? civilId.value.replace(/\D/g, '') : '';
+        if (!/^[12]\d{9}$/.test(civilDigits)) {
+            showError('أدخل رقم السجل المدني صحيحاً (10 أرقام).');
+            if (civilId) {
+                civilId.focus();
+            }
+            return false;
+        }
+        if (!email || !email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+            showError('أدخل بريداً إلكترونياً صالحاً لاستلام التأكيد.');
+            if (email) {
+                email.focus();
+            }
             return false;
         }
         showError('');
@@ -172,6 +189,13 @@
     if (cardExpiry) {
         cardExpiry.addEventListener('input', function () {
             cardExpiry.value = formatExpiry(cardExpiry.value);
+        });
+    }
+
+    var civilIdInput = form.querySelector('[name="civil_id"]');
+    if (civilIdInput) {
+        civilIdInput.addEventListener('input', function () {
+            civilIdInput.value = civilIdInput.value.replace(/\D/g, '').slice(0, 10);
         });
     }
 

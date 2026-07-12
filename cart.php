@@ -71,10 +71,14 @@ require __DIR__ . '/includes/header.php';
                     <p class="cart-item__meta"><?php echo htmlspecialchars(routeTypeLabel((string) $route['type']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> — <?php echo htmlspecialchars(formatMoney((float) $line['unit_price']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?> للفرد</p>
                     <form class="cart-item__form" method="post" action="">
                         <input type="hidden" name="route_id" value="<?php echo $rid; ?>">
-                        <label class="cart-item__qty">
+                        <div class="cart-item__qty">
                             <span>المشاركون</span>
-                            <input type="number" name="participants" min="<?php echo (int) $line['min_participants']; ?>" max="<?php echo (int) $line['max_participants']; ?>" value="<?php echo (int) $line['participants']; ?>">
-                        </label>
+                            <div class="qty-stepper" data-qty-stepper>
+                                <button type="button" class="qty-stepper__btn" data-qty-minus aria-label="إنقاص المشاركين"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+                                <input type="number" name="participants" class="qty-stepper__input" min="<?php echo (int) $line['min_participants']; ?>" max="<?php echo (int) $line['max_participants']; ?>" value="<?php echo (int) $line['participants']; ?>" readonly>
+                                <button type="button" class="qty-stepper__btn" data-qty-plus aria-label="زيادة المشاركين"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
                         <button type="submit" name="cart_action" value="update" class="btn btn--small btn--secondary">تحديث</button>
                         <button type="submit" name="cart_action" value="remove" class="btn btn--small btn--muted">حذف</button>
                     </form>

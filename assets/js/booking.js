@@ -27,7 +27,7 @@
 
     function formatMoney(amount) {
         if (!amount || amount <= 0) {
-            return 'مجاني';
+            return '00';
         }
         return amount.toLocaleString('ar-SA') + ' ريال';
     }
@@ -80,7 +80,7 @@
 
     function updatePaymentView() {
         var method = getSelectedPaymentMethod();
-        var isCard = method === 'mada' || method === 'card';
+        var isCard = method === 'mada';
         if (payWallet) {
             payWallet.hidden = isCard;
         }

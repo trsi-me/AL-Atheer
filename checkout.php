@@ -75,8 +75,12 @@ require __DIR__ . '/includes/header.php';
                         <input type="tel" name="phone" inputmode="numeric" placeholder="05xxxxxxxx" autocomplete="tel" required>
                     </label>
                     <label class="booking-field">
-                        <span>البريد الإلكتروني (اختياري)</span>
-                        <input type="email" name="email" autocomplete="email">
+                        <span>السجل المدني</span>
+                        <input type="text" name="civil_id" inputmode="numeric" maxlength="10" placeholder="1xxxxxxxxx" autocomplete="off" required>
+                    </label>
+                    <label class="booking-field">
+                        <span>البريد الإلكتروني</span>
+                        <input type="email" name="email" autocomplete="email" required>
                     </label>
                     <label class="booking-field">
                         <span>ملاحظات (اختياري)</span>

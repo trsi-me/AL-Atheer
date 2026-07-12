@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 try {
     if ($action === 'add') {
         $routeId = isset($_POST['route_id']) ? (int) $_POST['route_id'] : 0;
-        $participants = isset($_POST['participants']) ? (int) $_POST['participants'] : 1;
+        $participants = isset($_POST['participants']) ? (int) $_POST['participants'] : 25;
         if (!cartAdd($routeId, $participants)) {
             http_response_code(404);
             echo json_encode(['ok' => false, 'message' => 'تعذّر إضافة المسار للسلة.'], JSON_UNESCAPED_UNICODE);
@@ -33,7 +33,7 @@ try {
 
     if ($action === 'update') {
         $routeId = isset($_POST['route_id']) ? (int) $_POST['route_id'] : 0;
-        $participants = isset($_POST['participants']) ? (int) $_POST['participants'] : 1;
+        $participants = isset($_POST['participants']) ? (int) $_POST['participants'] : 25;
         if (!cartUpdate($routeId, $participants)) {
             http_response_code(404);
             echo json_encode(['ok' => false, 'message' => 'تعذّر تحديث السلة.'], JSON_UNESCAPED_UNICODE);

@@ -12,7 +12,7 @@ function cartEnsureSession(): void
     }
 }
 
-function cartAdd(int $routeId, int $participants = 1): bool
+function cartAdd(int $routeId, int $participants = 25): bool
 {
     if ($routeId < 1) {
         return false;
@@ -32,10 +32,16 @@ function cartAdd(int $routeId, int $participants = 1): bool
 
 function cartClampParticipants(array $route, int $participants): int
 {
-    $minP = isset($route['min_participants']) && $route['min_participants'] !== '' ? (int) $route['min_participants'] : 1;
-    $maxP = isset($route['max_participants']) && $route['max_participants'] !== '' ? (int) $route['max_participants'] : 0;
-    $participants = max(max(1, $minP), $participants);
-    if ($maxP > 0 && $participants > $maxP) {
+    $minP = isset($route['min_participants']) && $route['min_participants'] !== '' ? (int) $route['min_participants'] : 25;
+    $maxP = isset($route['max_participants']) && $route['max_participants'] !== '' ? (int) $route['max_participants'] : 100;
+    if ($minP < 1) {
+        $minP = 25;
+    }
+    if ($maxP < 1) {
+        $maxP = 100;
+    }
+    $participants = max($minP, $participants);
+    if ($participants > $maxP) {
         $participants = $maxP;
     }
     return $participants;
@@ -104,8 +110,8 @@ function cartGetLines(): array
             'route' => $route,
             'unit_price' => $unit,
             'line_total' => $lineTotal,
-            'min_participants' => max(1, (int) ($route['min_participants'] ?? 1) ?: 1),
-            'max_participants' => (int) ($route['max_participants'] ?? 0) ?: 99,
+            'min_participants' => max(25, (int) ($route['min_participants'] ?? 25) ?: 25),
+            'max_participants' => (int) ($route['max_participants'] ?? 100) ?: 100,
         ];
     }
     return $lines;

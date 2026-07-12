@@ -38,6 +38,7 @@ if ($order === null && $booking === null):
         <div><dt>رقم الطلب</dt><dd><?php echo htmlspecialchars((string) $order['order_ref'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
         <div><dt>الاسم</dt><dd><?php echo htmlspecialchars((string) $order['full_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
         <div><dt>الجوال</dt><dd><?php echo htmlspecialchars((string) $order['phone'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
+        <div><dt>السجل المدني</dt><dd><?php echo htmlspecialchars((string) ($order['civil_id'] ?? '—'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
         <div><dt>طريقة الدفع</dt><dd><?php echo htmlspecialchars(paymentMethodLabel((string) $order['payment_method']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
         <div><dt>المبلغ الإجمالي</dt><dd><?php echo htmlspecialchars(formatMoney((float) $order['total_amount']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
     </dl>
@@ -53,7 +54,7 @@ if ($order === null && $booking === null):
         <?php endforeach; ?>
     </ul>
 
-    <p class="booking-success__note">احتفظ برقم الطلب — قد يُطلب عند نقطة التجمع.</p>
+    <p class="booking-success__note">تم إرسال رسالة تأكيد مع باركود الحجز إلى بريدك الإلكتروني — احتفظ برقم الطلب عند نقطة التجمع.</p>
 
     <div class="booking-success__actions">
         <a class="btn btn--primary btn--large" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">المسارات</a>

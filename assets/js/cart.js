@@ -33,6 +33,58 @@
         }, 2800);
     }
 
+    function clampQty(input, value) {
+        var min = parseInt(input.getAttribute('min'), 10);
+        var max = parseInt(input.getAttribute('max'), 10);
+        if (isNaN(min)) {
+            min = 25;
+        }
+        if (isNaN(max)) {
+            max = 100;
+        }
+        if (isNaN(value) || value < min) {
+            return min;
+        }
+        if (value > max) {
+            return max;
+        }
+        return value;
+    }
+
+    document.querySelectorAll('[data-qty-stepper]').forEach(function (stepper) {
+        var input = stepper.querySelector('.qty-stepper__input');
+        var minus = stepper.querySelector('[data-qty-minus]');
+        var plus = stepper.querySelector('[data-qty-plus]');
+        var form = stepper.closest('form');
+        if (!input) {
+            return;
+        }
+
+        function applyDelta(delta) {
+            var next = clampQty(input, parseInt(input.value, 10) + delta);
+            input.value = String(next);
+            if (form) {
+                var updateBtn = form.querySelector('button[name="cart_action"][value="update"]');
+                if (updateBtn) {
+                    updateBtn.click();
+                } else {
+                    form.submit();
+                }
+            }
+        }
+
+        if (minus) {
+            minus.addEventListener('click', function () {
+                applyDelta(-1);
+            });
+        }
+        if (plus) {
+            plus.addEventListener('click', function () {
+                applyDelta(1);
+            });
+        }
+    });
+
     document.querySelectorAll('[data-add-to-cart]').forEach(function (btn) {
         btn.addEventListener('click', function (ev) {
             ev.preventDefault();
@@ -43,7 +95,7 @@
             var formData = new FormData();
             formData.append('action', 'add');
             formData.append('route_id', routeId);
-            formData.append('participants', '1');
+            formData.append('participants', '25');
 
             btn.disabled = true;
             fetch(cartApiUrl, {

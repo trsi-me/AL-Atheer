@@ -8,6 +8,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/database.php';
 require_once __DIR__ . '/booking.php';
 require_once __DIR__ . '/cart.php';
+require_once __DIR__ . '/mail.php';
 
 function siteDisplayName(): string
 {
@@ -134,7 +135,7 @@ function atheerApplyReferenceContentV2(PDO $pdo): void
 
     try {
         $chk = $pdo->prepare('SELECT key_value FROM settings WHERE key_name = :k LIMIT 1');
-        $chk->execute(['k' => 'atheer_route_ref_v4']);
+        $chk->execute(['k' => 'atheer_route_ref_v5']);
         $v = $chk->fetchColumn();
         if ($v === '1') {
             return;
@@ -188,7 +189,7 @@ function atheerApplyReferenceContentV2(PDO $pdo): void
     }
 
     try {
-        $pdo->exec("INSERT INTO settings (key_name, key_value) VALUES ('atheer_route_ref_v4', '1') ON DUPLICATE KEY UPDATE key_value = '1'");
+        $pdo->exec("INSERT INTO settings (key_name, key_value) VALUES ('atheer_route_ref_v5', '1') ON DUPLICATE KEY UPDATE key_value = '1'");
     } catch (Throwable $e) {
         // تجاهل
     }
@@ -424,7 +425,7 @@ function assetUrl(string $path): string
 
 function assetBuildVersion(): string
 {
-    return '3';
+    return '4';
 }
 
 function assetStaticUrl(string $path): string

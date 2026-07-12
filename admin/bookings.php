@@ -40,6 +40,7 @@ require dirname(__DIR__) . '/includes/header.php';
                     <th>المسار</th>
                     <th>الاسم</th>
                     <th>الجوال</th>
+                    <th>السجل المدني</th>
                     <th>المشاركون</th>
                     <th>المبلغ</th>
                     <th>الدفع</th>
@@ -54,6 +55,7 @@ require dirname(__DIR__) . '/includes/header.php';
                     <td><?php echo htmlspecialchars((string) $b['route_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) $b['full_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) $b['phone'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars((string) ($b['civil_id'] ?? '—'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo (int) $b['participants']; ?></td>
                     <td><?php echo htmlspecialchars(formatMoney((float) $b['total_amount']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars(paymentMethodLabel((string) $b['payment_method']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></td>

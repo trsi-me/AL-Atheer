@@ -17,6 +17,7 @@ function atheerEnsureBookingsSchema(PDO $pdo): void
         full_name VARCHAR(255) NOT NULL,
         phone VARCHAR(20) NOT NULL,
         email VARCHAR(255) NULL,
+        civil_id VARCHAR(20) NULL,
         participants INT UNSIGNED NOT NULL DEFAULT 1,
         unit_price DECIMAL(10,2) NOT NULL DEFAULT 0,
         total_amount DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -32,14 +33,18 @@ function atheerEnsureBookingsSchema(PDO $pdo): void
         KEY idx_order_ref (order_ref)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    try {
-        $pdo->exec('ALTER TABLE bookings ADD COLUMN order_ref VARCHAR(24) NULL');
-    } catch (PDOException $e) {
-        $msg = $e->getMessage();
-        if (stripos($msg, 'Duplicate column') === false && stripos($msg, 'duplicate column name') === false) {
-            throw $e;
+    $tryCol = static function (string $sql) use ($pdo): void {
+        try {
+            $pdo->exec($sql);
+        } catch (PDOException $e) {
+            $msg = $e->getMessage();
+            if (stripos($msg, 'Duplicate column') === false && stripos($msg, 'duplicate column name') === false) {
+                throw $e;
+            }
         }
-    }
+    };
+    $tryCol('ALTER TABLE bookings ADD COLUMN order_ref VARCHAR(24) NULL');
+    $tryCol('ALTER TABLE bookings ADD COLUMN civil_id VARCHAR(20) NULL');
 }
 
 function paymentIsSimulation(): bool
@@ -69,7 +74,7 @@ function routeUnitPrice(array $route): float
 function formatMoney(float $amount): string
 {
     if ($amount <= 0) {
-        return 'مجاني';
+        return '00';
     }
     return number_format($amount, 0, '.', ',') . ' ريال';
 }
@@ -81,11 +86,6 @@ function paymentMethodsCatalog(): array
             'label' => 'مدى',
             'hint' => 'بطاقة مدى السعودية',
             'badge' => 'مدى',
-        ],
-        'card' => [
-            'label' => 'فيزا / ماستركارد',
-            'hint' => 'بطاقات ائتمانية دولية',
-            'badge' => 'VISA',
         ],
         'apple_pay' => [
             'label' => 'Apple Pay',
@@ -103,6 +103,16 @@ function paymentMethodsCatalog(): array
             'badge' => 'تمارا',
         ],
     ];
+}
+
+function normalizeCivilId(string $civilId): string
+{
+    return preg_replace('/\D+/', '', $civilId) ?? '';
+}
+
+function isValidSaudiCivilId(string $civilId): bool
+{
+    return (bool) preg_match('/^[12]\d{9}$/', $civilId);
 }
 
 function paymentMethodLabel(string $method): string
@@ -151,8 +161,8 @@ function validateBookingInput(array $route, array $input): array
         $errors[] = 'البريد الإلكتروني غير صالح.';
     }
 
-    $minP = isset($route['min_participants']) && $route['min_participants'] !== '' ? (int) $route['min_participants'] : 1;
-    $maxP = isset($route['max_participants']) && $route['max_participants'] !== '' ? (int) $route['max_participants'] : 0;
+    $minP = isset($route['min_participants']) && $route['min_participants'] !== '' ? (int) $route['min_participants'] : 25;
+    $maxP = isset($route['max_participants']) && $route['max_participants'] !== '' ? (int) $route['max_participants'] : 100;
     if ($participants < max(1, $minP)) {
         $errors[] = 'الحد الأدنى للمشاركين هو ' . max(1, $minP) . '.';
     }
@@ -164,7 +174,7 @@ function validateBookingInput(array $route, array $input): array
         $errors[] = 'اختر طريقة دفع صالحة.';
     }
 
-    if (!paymentIsSimulation() && in_array($method, ['mada', 'card'], true)) {
+    if (!paymentIsSimulation() && $method === 'mada') {
         $cardNumber = preg_replace('/\D+/', '', (string) ($input['card_number'] ?? '')) ?? '';
         $expiry = trim((string) ($input['card_expiry'] ?? ''));
         $cvv = trim((string) ($input['card_cvv'] ?? ''));
@@ -252,6 +262,7 @@ function validateCheckoutInput(array $input): array
     $name = trim((string) ($input['full_name'] ?? ''));
     $phone = normalizePhone((string) ($input['phone'] ?? ''));
     $email = trim((string) ($input['email'] ?? ''));
+    $civilId = normalizeCivilId((string) ($input['civil_id'] ?? ''));
     $method = (string) ($input['payment_method'] ?? '');
     $notes = trim((string) ($input['notes'] ?? ''));
 
@@ -261,13 +272,16 @@ function validateCheckoutInput(array $input): array
     if (!preg_match('/^05\d{8}$/', $phone)) {
         $errors[] = 'أدخل رقم جوال سعودي صحيح (مثال: 05xxxxxxxx).';
     }
-    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'البريد الإلكتروني غير صالح.';
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'أدخل بريداً إلكترونياً صالحاً لاستلام تأكيد الحجز.';
+    }
+    if (!isValidSaudiCivilId($civilId)) {
+        $errors[] = 'أدخل رقم السجل المدني صحيحاً (10 أرقام ويبدأ بـ 1 أو 2).';
     }
     if (!array_key_exists($method, paymentMethodsCatalog())) {
         $errors[] = 'اختر طريقة دفع صالحة.';
     }
-    if (!paymentIsSimulation() && in_array($method, ['mada', 'card'], true)) {
+    if (!paymentIsSimulation() && $method === 'mada') {
         $cardNumber = preg_replace('/\D+/', '', (string) ($input['card_number'] ?? '')) ?? '';
         $expiry = trim((string) ($input['card_expiry'] ?? ''));
         $cvv = trim((string) ($input['card_cvv'] ?? ''));
@@ -287,7 +301,8 @@ function validateCheckoutInput(array $input): array
         'data' => [
             'full_name' => $name,
             'phone' => $phone,
-            'email' => $email === '' ? null : $email,
+            'email' => $email,
+            'civil_id' => $civilId,
             'payment_method' => $method,
             'notes' => $notes === '' ? null : $notes,
         ],
@@ -318,10 +333,10 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
     $lineNo = 0;
 
     $sql = 'INSERT INTO bookings (
-        booking_ref, order_ref, route_id, full_name, phone, email, participants,
+        booking_ref, order_ref, route_id, full_name, phone, email, civil_id, participants,
         unit_price, total_amount, payment_method, payment_status, notes, paid_at
     ) VALUES (
-        :booking_ref, :order_ref, :route_id, :full_name, :phone, :email, :participants,
+        :booking_ref, :order_ref, :route_id, :full_name, :phone, :email, :civil_id, :participants,
         :unit_price, :total_amount, :payment_method, :payment_status, :notes, :paid_at
     )';
 
@@ -348,6 +363,7 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
             'full_name' => $customer['full_name'],
             'phone' => $customer['phone'],
             'email' => $customer['email'],
+            'civil_id' => $customer['civil_id'],
             'participants' => $participants,
             'unit_price' => $unit,
             'total_amount' => $lineTotal,
@@ -363,6 +379,7 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
             'route_id' => (int) $route['id'],
             'route_name' => (string) $route['name'],
             'participants' => $participants,
+            'total_amount' => $lineTotal,
             'line_total' => $lineTotal,
         ];
     }
@@ -374,6 +391,8 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
         'items' => $items,
         'full_name' => $customer['full_name'],
         'phone' => $customer['phone'],
+        'email' => $customer['email'],
+        'civil_id' => $customer['civil_id'],
     ];
 }
 
@@ -402,6 +421,7 @@ function getOrderByRef(PDO $pdo, string $orderRef): ?array
         'full_name' => $first['full_name'],
         'phone' => $first['phone'],
         'email' => $first['email'],
+        'civil_id' => $first['civil_id'] ?? '',
         'payment_method' => $first['payment_method'],
         'created_at' => $first['created_at'],
         'total_amount' => round($total, 2),
@@ -435,5 +455,10 @@ function processCheckoutOrder(): array
     $pdo = get_pdo();
     $result = createOrderFromCart($pdo, $lines, $validated['data']);
     cartClear();
+    try {
+        sendOrderConfirmationEmail($result);
+    } catch (Throwable $e) {
+        error_log('Booking confirmation email failed: ' . $e->getMessage());
+    }
     return $result;
 }
