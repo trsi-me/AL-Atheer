@@ -32,7 +32,7 @@ if ($order === null && $booking === null):
 <section class="booking-success">
     <div class="booking-success__icon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
     <h1 class="booking-success__title">تم تأكيد طلبك بنجاح</h1>
-    <p class="booking-success__lead"><?php if (paymentIsSimulation()): ?>شكراً لك — تم تسجيل حجزك (محاكاة — لم يُخصم أي مبلغ حقيقي).<?php else: ?>شكراً لك — تم استلام الدفع وتسجيل جميع المسارات في طلبك.<?php endif; ?></p>
+    <p class="booking-success__lead">شكراً لك — تم استلام الدفع وتسجيل جميع المسارات في طلبك.</p>
 
     <dl class="booking-success__details">
         <div><dt>رقم الطلب</dt><dd><?php echo htmlspecialchars((string) $order['order_ref'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></dd></div>
@@ -54,7 +54,7 @@ if ($order === null && $booking === null):
         <?php endforeach; ?>
     </ul>
 
-    <p class="booking-success__note">تم إرسال رسالة تأكيد مع باركود الحجز إلى بريدك الإلكتروني — احتفظ برقم الطلب عند نقطة التجمع.</p>
+    <p class="booking-success__note">احتفظ برقم الطلب — قد يُطلب عند نقطة التجمع.</p>
 
     <div class="booking-success__actions">
         <a class="btn btn--primary btn--large" href="<?php echo htmlspecialchars(assetUrl('index.php'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">المسارات</a>

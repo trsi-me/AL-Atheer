@@ -343,10 +343,6 @@ function createOrderFromCart(PDO $pdo, array $cartLines, array $customer): array
     $stmt = $pdo->prepare($sql);
     $paidAt = date('Y-m-d H:i:s');
     $notes = $customer['notes'];
-    if (paymentIsSimulation()) {
-        $simNote = 'دفع محاكى — لا يُخصم مبلغ حقيقي';
-        $notes = $notes !== null && $notes !== '' ? $notes . ' | ' . $simNote : $simNote;
-    }
 
     foreach ($cartLines as $line) {
         $lineNo++;
@@ -455,10 +451,5 @@ function processCheckoutOrder(): array
     $pdo = get_pdo();
     $result = createOrderFromCart($pdo, $lines, $validated['data']);
     cartClear();
-    try {
-        sendOrderConfirmationEmail($result);
-    } catch (Throwable $e) {
-        error_log('Booking confirmation email failed: ' . $e->getMessage());
-    }
     return $result;
 }

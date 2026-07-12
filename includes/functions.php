@@ -8,7 +8,6 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/database.php';
 require_once __DIR__ . '/booking.php';
 require_once __DIR__ . '/cart.php';
-require_once __DIR__ . '/mail.php';
 
 function siteDisplayName(): string
 {

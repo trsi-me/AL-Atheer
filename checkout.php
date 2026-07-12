@@ -18,11 +18,9 @@ $paymentMethods = paymentMethodsCatalog();
 $subtotal = cartSubtotal();
 
 $checkoutError = checkoutPullFlashError();
-$isSimulation = paymentIsSimulation();
 
 $checkoutConfig = [
     'unitPrice' => $subtotal,
-    'simulation' => $isSimulation,
     'completeUrl' => checkoutCompleteUrl(),
 ];
 
@@ -32,7 +30,7 @@ require __DIR__ . '/includes/header.php';
 <section class="booking checkout-page" id="checkout-app">
     <header class="booking__head">
         <h1 class="booking__title">إتمام الشراء</h1>
-        <p class="booking__lead"><?php if ($isSimulation): ?>راجع طلبك وأكد الحجز — دفع محاكى بدون خصم حقيقي.<?php else: ?>راجع طلبك وادفع بأمان — <?php echo count($lines); ?> مسار في السلة.<?php endif; ?></p>
+        <p class="booking__lead">راجع طلبك وأكمل الدفع — <?php echo count($lines); ?> مسار في السلة.</p>
     </header>
 
     <ol class="booking-steps" aria-label="خطوات الدفع">
@@ -113,39 +111,12 @@ require __DIR__ . '/includes/header.php';
                 </div>
 
                 <div class="booking-step" data-step="3" hidden>
-                    <h2 class="booking-panel__title"><?php echo $isSimulation ? 'تأكيد الحجز' : 'تأكيد الدفع'; ?></h2>
-                    <?php if ($isSimulation): ?>
-                    <div class="pay-simulation">
-                        <p class="pay-simulation__badge"><i class="fa-solid fa-flask" aria-hidden="true"></i> وضع محاكاة</p>
-                        <p class="pay-simulation__text">هذا حجز تجريبي للعرض فقط. لا يُخصم أي مبلغ حقيقي ولا تُرسل بيانات لأي بوابة دفع.</p>
-                        <p class="pay-simulation__total">المبلغ: <strong><?php echo htmlspecialchars(formatMoney($subtotal), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></strong> (للعرض فقط)</p>
-                        <p class="pay-simulation__method" id="pay-method-label">طريقة الدفع: مدى</p>
-                        <button type="submit" class="btn btn--primary btn--large pay-simulation__submit">تأكيد الحجز</button>
+                    <h2 class="booking-panel__title">تأكيد الدفع</h2>
+                    <div class="pay-confirm">
+                        <p class="pay-confirm__total">المبلغ: <strong id="pay-amount-label"><?php echo htmlspecialchars(formatMoney($subtotal), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></strong></p>
+                        <p class="pay-confirm__method" id="pay-method-label">طريقة الدفع: مدى</p>
+                        <button type="submit" class="btn btn--primary btn--large pay-confirm__submit">تأكيد الدفع</button>
                     </div>
-                    <?php else: ?>
-                    <div class="pay-wallet" id="pay-wallet" hidden>
-                        <p class="pay-wallet__text">سيتم فتح محفظتك الرقمية لإتمام الدفع بأمان.</p>
-                        <button type="submit" class="btn btn--primary btn--large pay-wallet__btn">ادفع الآن</button>
-                    </div>
-                    <div class="pay-card-form" id="pay-card-form">
-                        <label class="booking-field">
-                            <span>رقم البطاقة</span>
-                            <input type="text" name="card_number" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" maxlength="19">
-                        </label>
-                        <div class="pay-card-form__row">
-                            <label class="booking-field">
-                                <span>تاريخ الانتهاء</span>
-                                <input type="text" name="card_expiry" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5">
-                            </label>
-                            <label class="booking-field">
-                                <span>CVV</span>
-                                <input type="password" name="card_cvv" inputmode="numeric" autocomplete="cc-csc" placeholder="***" maxlength="4">
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn--primary btn--large">ادفع <span id="pay-amount-label"><?php echo htmlspecialchars(formatMoney($subtotal), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span></button>
-                    </div>
-                    <p class="booking-secure"><i class="fa-solid fa-lock" aria-hidden="true"></i> اتصال مشفّر — بيانات الدفع لا تُخزَّن على الخادم.</p>
-                    <?php endif; ?>
                     <p class="booking-error" id="booking-error" role="alert" hidden></p>
                     <div class="booking-panel__actions">
                         <button type="button" class="btn btn--muted" data-prev-step>رجوع</button>
